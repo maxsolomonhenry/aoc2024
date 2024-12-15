@@ -11,10 +11,18 @@ int parseLine(std::string line) {
 
     for (const auto &c : line)
     {
+
+        if (nDigits > 0 && (c == ',' || c == ')')){
+            pRead++; 
+            nDigits = 0;
+        }
+
         char target = kPattern[pRead];
 
         if (target == '#') {
-            nDigits++;
+
+            if (std::isdigit(c)) nDigits++;
+
             if (!std::isdigit(c) || nDigits > 3) {
                 buffer.clear();
                 pRead = 0;
@@ -25,17 +33,19 @@ int parseLine(std::string line) {
             buffer += c;
             std::cout << buffer << '\n';
 
-        } else if (c == target) {
+            continue;
+        } 
+        
+        if (c == target) {
             buffer += c;
             pRead++;
             std::cout << buffer << '\n';
+            continue;
+        } 
 
-        } else {
-            buffer.clear();
-            pRead = 0;
-            nDigits = 0;
-        }
-        
+        buffer.clear();
+        pRead = 0;
+        nDigits = 0;
     }
 
     return 0;
