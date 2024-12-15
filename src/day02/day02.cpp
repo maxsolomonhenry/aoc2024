@@ -5,38 +5,39 @@
 enum Trend {
     UP,
     DOWN,
-    NUL
+    NONE
 };
 
-bool isSafe(const std::string &line){
+bool isSafe(const std::string &line, const int &nMaxErrors){
 
     std::stringstream ss(line);
     std::string token;
     int val;
     int diff;
-    Trend trend = NUL;
+    Trend trend = NONE;
 
     // Grab first value.
     ss >> token;
     val = std::stoi(token);
 
+    int nErrors = 0;
     while (ss >> token)
     {
         diff = val - std::stoi(token);
 
         if ((std::abs(diff) > 3) || (std::abs(diff) < 1))
-            return false;
+            nErrors++;
 
         switch(trend) {
             case Trend::UP:
                 if (diff < 0)
-                    return false;
+                    nErrors++;
                 break;
             case Trend::DOWN:
                 if (diff > 0)
-                    return false;
+                    nErrors++;
                 break;
-            case Trend::NUL:
+            case Trend::NONE:
                 if (diff > 0)
                     trend = Trend::UP;
 
@@ -48,7 +49,7 @@ bool isSafe(const std::string &line){
         val = std::stoi(token);
     }
 
-    return true;
+    return nErrors <= nMaxErrors;
 }
 
 int main() {
@@ -58,7 +59,7 @@ int main() {
 
     for (const auto &line : lines)
     {
-        if (isSafe(line))
+        if (isSafe(line, 1))
             nSafe += 1;
     }
 
