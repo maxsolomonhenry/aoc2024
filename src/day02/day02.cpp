@@ -58,15 +58,20 @@ int main() {
     if (lines.empty())
         return 1;
 
-    int nSafe = 0;
+    int nSafePart1 = 0;
+    int nSafePart2 = 0;
 
     for (const auto &line : lines)
     {
+        if (isSafe(line, 0))
+            nSafePart1++;
+
         if (isSafe(line, 1))
-            nSafe += 1;
+            nSafePart2++;
     }
 
-    std::cout << "Number of safe reports: " << nSafe << "\n";
+    std::cout << "Number of safe reports (Part 1): " << nSafePart1 << "\n";
+    std::cout << "Number of safe reports (Part 2): " << nSafePart2 << "\n";
 
     return 0;
 }
