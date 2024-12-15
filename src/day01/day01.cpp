@@ -5,8 +5,11 @@
 
 int main() {
 
-    std::string fpath = "../src/day01/input.txt";
+    std::string fpath = "src/day01/input.txt";
     std::vector<std::string> lines = util::read(fpath);
+
+    if (lines.empty())
+        return 1;
 
     std::vector<int> left;
     std::vector<int> right;

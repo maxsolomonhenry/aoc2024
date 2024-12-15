@@ -53,7 +53,10 @@ bool isSafe(const std::string &line, const int &nMaxErrors){
 }
 
 int main() {
-    std::vector<std::string> lines = util::read("../src/day02/input.txt");
+    std::vector<std::string> lines = util::read("src/day02/input.txt");
+
+    if (lines.empty())
+        return 1;
 
     int nSafe = 0;
 
