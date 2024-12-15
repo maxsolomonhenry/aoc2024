@@ -9,4 +9,4 @@ cmake ..
 cmake --build .
 ```
 
-All compiled solutions will be in `build\bin`.
+All compiled solutions will be in `build/bin/`.
