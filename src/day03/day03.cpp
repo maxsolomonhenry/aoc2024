@@ -5,14 +5,21 @@
 #include <regex>
 
 int parseLine(std::string line) {
-    static const std::regex pattern(R"(mul\((\d{1,3}),(\d{1,3})\))");
+    static const std::regex pattern(R"(mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\))");
     std::sregex_iterator it(line.begin(), line.end(), pattern);
     std::sregex_iterator end;
 
     int sum = 0;
+    bool doGate = true;
+
     while (it != end) {
         std::smatch match = *it;
-        sum += std::stoi(match[1].str()) * std::stoi(match[2].str());
+
+        if (match[1].matched) {
+            sum += std::stoi(match[1].str()) * std::stoi(match[2].str()) * doGate;
+        } else {
+            doGate = (match[0] == "do()");
+        }
         ++it;
     }
 
