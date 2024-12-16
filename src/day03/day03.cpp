@@ -32,9 +32,13 @@ int main() {
     if (lines.empty())
         return 1;
 
+    std::string longLine;
+
     int score = 0;
     for (const auto &line : lines)
-        score += parseLine(line);
+        longLine += line;
+
+    score = parseLine(longLine);
 
     std::cout << "Total output: " << score << '\n';
 
