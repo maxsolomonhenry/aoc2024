@@ -2,53 +2,21 @@
 
 #include <iostream>
 #include <cctype>
+#include <regex>
 
 int parseLine(std::string line) {
-    std::string buffer = "";
-    static const std::string kPattern = "mul(#,#)";
-    int pRead = 0;
-    int nDigits = 0;
+    static const std::regex pattern(R"(mul\((\d{1,3}),(\d{1,3})\))");
+    std::sregex_iterator it(line.begin(), line.end(), pattern);
+    std::sregex_iterator end;
 
-    for (const auto &c : line)
-    {
-
-        if (nDigits > 0 && (c == ',' || c == ')')){
-            pRead++; 
-            nDigits = 0;
-        }
-
-        char target = kPattern[pRead];
-
-        if (target == '#') {
-
-            if (std::isdigit(c)) nDigits++;
-
-            if (!std::isdigit(c) || nDigits > 3) {
-                buffer.clear();
-                pRead = 0;
-                nDigits = 0;
-                continue;
-            }
-
-            buffer += c;
-            std::cout << buffer << '\n';
-
-            continue;
-        } 
-        
-        if (c == target) {
-            buffer += c;
-            pRead++;
-            std::cout << buffer << '\n';
-            continue;
-        } 
-
-        buffer.clear();
-        pRead = 0;
-        nDigits = 0;
+    int sum = 0;
+    while (it != end) {
+        std::smatch match = *it;
+        sum += std::stoi(match[1].str()) * std::stoi(match[2].str());
+        ++it;
     }
 
-    return 0;
+    return sum;
 }
 
 int main() {
@@ -60,6 +28,8 @@ int main() {
     int score = 0;
     for (const auto &line : lines)
         score += parseLine(line);
+
+    std::cout << "Total output: " << score << '\n';
 
     return 0;
 }
