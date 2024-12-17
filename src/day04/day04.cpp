@@ -85,14 +85,13 @@ bool hasXmas(const std::vector<std::string> &lines, const size_t &x, const size_
 
         if (lines[yy][xx] != kPattern[i])
             return false;
-        
     }
 
     return true;
 }
 
 
-int findNumXmas(const std::vector<std::string> lines, const size_t &x, const size_t &y) {
+int findNumXmas(const std::vector<std::string> &lines, const size_t &x, const size_t &y) {
 
     if (lines[y][x] != 'X')
         return 0;
@@ -138,15 +137,46 @@ int findNumXmas(const std::vector<std::string> lines, const size_t &x, const siz
 }
 
 
+bool hasMas(const std::vector<std::string> &lines, size_t x, size_t y, Direction direction) {
+    static const size_t &maxX = lines[0].size();
+    static const size_t &maxY = lines.size();
+
+    if (x < 1 || x >= (maxX - 1) || y < 1 || y >= (maxY - 1))
+        return false;
+
+    size_t dy = (direction == Direction::UPLEFT) ? -1 : 1;
+
+    if (lines[y + dy][x - 1] == 'M' && lines[y - dy][x + 1] == 'S' || lines[y + dy][x - 1] == 'S' && lines[y - dy][x + 1] == 'M')
+        return true;
+
+    return false;
+}
+
+int findNumMas(const std::vector<std::string> &lines, size_t x, size_t y) {
+    if (lines[y][x] != 'A')
+        return 0;
+
+    if(hasMas(lines, x, y, Direction::UPLEFT) && hasMas(lines, x, y, Direction::DOWNLEFT))
+        return 1;
+    
+    return 0;
+}
+
+
 int main() {
     auto lines = util::read("src/day04/input.txt");
     int nXmas = 0;
+    int nMas = 0;
 
     for (size_t y = 0; y < lines.size(); y++)
         for (size_t x = 0; x < lines[y].size(); x++)
+        {
             nXmas += findNumXmas(lines, x, y);
+            nMas += findNumMas(lines, x, y);
+        }
 
     std::cout << "Number of XMAS: " << nXmas << '\n';
+    std::cout << "Number of MAS: " << nMas << '\n';
 
     return 0;
 }
