@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 namespace util {
     std::vector<std::string> read(const std::string &fpath) {
@@ -22,5 +23,16 @@ namespace util {
         file.close();
 
         return lines;
+    }
+
+    std::vector<int> parseIntegers(const std::string &line, const char delimiter) {
+        std::stringstream ss(line);
+        std::string temp;
+        std::vector<int> buffer;
+
+        while (std::getline(ss, temp, delimiter))
+            buffer.push_back(std::stoi(temp));
+
+        return buffer;
     }
 }
