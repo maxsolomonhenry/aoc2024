@@ -81,8 +81,15 @@ int main() {
 
     int numX = 0;
     for (int x = 0; x < maxX; x++)
+    {
         for (int y = 0; y < maxY; y++)
+        {
             if (grid[Point(x, y)] == 'X') numX++;
+            std::cout << grid[Point(x, y)];
+        }
+        std::cout << "\n";
+    }
+
 
     std::cout << "Num visited squares: " << numX << '\n';
 
