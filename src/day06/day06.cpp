@@ -32,57 +32,38 @@ enum class Direction {
     Right
 };
 
-bool isBlocker(std::map<Point, char> grid, std::map<Point, Direction> path, Point guard, const int& maxX, const int& maxY) {
-    Direction direction = path[guard];
-
-    Point dxdy;
-    Direction target;
-    Direction opposite;
-    switch (direction)
-    {
-        case (Direction::Left):
-            // Search up.
-            dxdy = Point(0, -1);
-            target = Direction::Up;
-            opposite = Direction::Down;
-            break;
-        case (Direction::Up):
-            // Search right.
-            dxdy = Point(1, 0);
-            target = Direction::Right;
-            opposite = Direction::Left;
-            break;
-        case (Direction::Right):
-            // Search down.
-            dxdy = Point(0, 1);
-            target = Direction::Down;
-            opposite = Direction::Up;
-            break;
-        case (Direction::Down):
-            // Search left.
-            dxdy = Point(-1, 0);
-            target = Direction::Left;
-            opposite = Direction::Right;
-            break;
+class Grid {
+private:
+    int width;
+    int height;
+    std::map<Point, char> tiles;
+public:
+    Grid(int width_, int height_) : width(width_), height(height_) {}
+    void add(int x, int y, char c) {
+        if (!(x >+ 0 && x < width && y >= 0 && y < height))
+            throw std::out_of_range("Position out of bounds");
+        tiles[Point(x, y)] = c;
     }
 
-    while (guard.x >= 0 && guard.x < maxX && guard.y >= 0 && guard.y < maxY)
-    {
-        guard += dxdy;
-        path[guard] = direction;
-        
-        if (grid[guard] == '#')
-        {
-            path[guard] = target;
-            return isBlocker(grid, path, guard, maxX, maxY);
-        }
-
-        if (path[guard] == target || path[guard] == opposite)
-            return true;
+    char read(int x, int y) {
+        Point xy = Point(x, y);
+        if (!tiles.count(xy) > 0)
+            throw std::invalid_argument("Position not found");
+        return tiles[xy];
     }
+};
 
-    return false;
-}
+class Guard {
+private:
+    Point position;
+    Direction direction;
+    std::map<Point, std::vector<Direction>> path;
+    Grid* grid;
+public:
+    Guard (Grid* grid_, Point position_, Direction direction_) : grid(grid_), position(position_), direction(direction_) {
+        path[position].push_back(direction);
+    }
+};
 
 int main() {
     const auto lines = util::read("src/day06/input.txt");
