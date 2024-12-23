@@ -39,17 +39,20 @@ private:
     std::map<Point, char> tiles;
 public:
     Grid(int width_, int height_) : width(width_), height(height_) {}
-    void add(int x, int y, char c) {
-        if (!(x >+ 0 && x < width && y >= 0 && y < height))
+    void add(Point point, char c) {
+        if (!isInBounds(point))
             throw std::out_of_range("Position out of bounds");
-        tiles[Point(x, y)] = c;
+        tiles[point] = c;
     }
 
-    char read(int x, int y) {
-        Point xy = Point(x, y);
-        if (!tiles.count(xy) > 0)
+    char read(Point xy) {
+        if (!(tiles.count(xy) > 0))
             throw std::invalid_argument("Position not found");
         return tiles[xy];
+    }
+
+    bool isInBounds(Point point) {
+        return (point.x >= 0 && point.x < width && point.y >= 0 && point.y < height);
     }
 };
 
@@ -59,18 +62,8 @@ private:
     Direction direction;
     std::map<Point, std::vector<Direction>> path;
     Grid* grid;
-public:
-    Guard (Grid* grid_, Point position_, Direction direction_) : grid(grid_), position(position_), direction(direction_) {
-        path[position].push_back(direction);
-    }
-};
 
-int main() {
-    const auto lines = util::read("src/day06/input.txt");
-    std::map<Point, char> grid;
-    std::map<Point, Direction> path;
-
-    std::map<Direction, Point> step = {
+    std::map<Direction, Point> dxdy = {
         {Direction::Up, Point(0, -1)},
         {Direction::Down, Point(0, 1)},
         {Direction::Left, Point(-1, 0)},
@@ -84,55 +77,63 @@ int main() {
         {Direction::Right, Direction::Down},        
     };
 
-    int maxX = lines[0].size();
-    int maxY = lines.size();
+public:
+    Guard (Grid* grid_, Point position_, Direction direction_) : grid(grid_), position(position_), direction(direction_) {
+        log();
+    }
 
-    Point guard(-1, -1);
+    Point getPosition() {
+        return position;
+    }
 
-    // Build grid from input.
-    for (int x = 0; x < maxX; x++)
-        for (int y = 0; y < maxY; y++)
-        {
-            grid[Point(x, y)] = lines[y][x];
+    void log() {
+        path[position].push_back(direction);
+    }
 
-            if (lines[y][x] == '^')
-                guard = Point(x, y);
-        }
-    
-    Direction direction = Direction::Up;
+    bool step() {
+        Point target = position + dxdy[direction];
 
-    // Calculate.
-    int numBlockers = 0;
-    while (guard.x >= 0 && guard.x < maxX && guard.y >= 0 && guard.y < maxY)
-    {
-        grid[guard] = 'X';
-        path[guard] = direction;
-        Point target = guard + step[direction];
+        if (!grid->isInBounds(target))
+            return false;
 
-        if (grid[target] == '#')
+        if (grid->read(target) == '#')
             direction = turn[direction];
 
-        guard += step[direction];
+        position += dxdy[direction];
+
+        log();
+
+        return true;
     }
 
-    int numX = 0;
-    for (int x = 0; x < maxX; x++)
-    {
-        for (int y = 0; y < maxY; y++)
+    int getNumVisitedTiles() {
+        return path.size();
+    }
+};
+
+int main() {
+    const auto lines = util::read("src/day06/input.txt");
+
+    int width = lines[0].size();
+    int height = lines.size();
+    Grid grid(width, height);
+    Point start;
+
+    // Build grid from input.
+    for (int x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
         {
-            if (grid[Point(x, y)] == 'X')
-            {
-                numX++;
-                numBlockers += isBlocker(grid, path, Point(x, y), maxX, maxY);
-            }
-            std::cout << grid[Point(x, y)];
+            grid.add(Point(x, y), lines[y][x]);
+
+            if (lines[y][x] == '^')
+                start = Point(x, y);
         }
-        std::cout << "\n";
-    }
+    
+    Guard guard(&grid, start, Direction::Up);
 
+    while (guard.step()) {};
 
-    std::cout << "Num visited squares: " << numX << '\n';
-    std::cout << "Num blockers: " << numBlockers << '\n';
+    std::cout << "Num visited squares: " << guard.getNumVisitedTiles() << '\n';
 
     return 0;
 }
