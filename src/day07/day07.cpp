@@ -3,49 +3,46 @@
 #include <iostream>
 #include <unordered_set>
 
-int evaluate(std::string line) {
+long long concatenate(long long prev, long long operand) {
+    return std::stol(std::to_string(prev) + std::to_string(operand));
+}
+
+long long evaluate(std::string line) {
     auto values = util::parseLongs(line, ' ');
     
     // Pop off first element.
-    long target = values[0];
+    long long target = values[0];
     values.erase(values.begin());
 
-    std::unordered_set<long> dp;
+    std::unordered_set<long long> dp;
     dp.insert(values[0]);
 
     for (int i = 1; i < values.size(); i++)
     {
-        std::unordered_set<long> next;
-        long operand = values[i];
-        for (long prev : dp) 
+        std::unordered_set<long long> next;
+        long long operand = values[i];
+        for (long long prev : dp) 
         {
-            // std::cout << prev << ", ";
             next.insert(prev + operand);
             next.insert(prev * operand);
+            next.insert(concatenate(prev, operand));
         }
-        // std::cout << "| ";
 
         dp = std::move(next);
     }
 
-    // for (auto element : dp) {
-    //     std::cout << element << ", ";
-    // }
-
     if (dp.count(target) > 0)
     {
-        // std::cout << "Success.\n";
         return target;
     }
 
-    // std::cout << "Failure.\n";
     return 0;
 }
 
 int main() {
     auto lines = util::read("src/day07/input.txt");
 
-    long score = 0;
+    long long score = 0;
     for (auto line : lines)
     {
         score += evaluate(line);
