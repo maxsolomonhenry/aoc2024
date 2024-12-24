@@ -14,13 +14,17 @@ long long evaluate(std::string line) {
     long long target = values[0];
     values.erase(values.begin());
 
+    // Track set for latest round of calculations.
     std::unordered_set<long long> dp;
     dp.insert(values[0]);
 
+    // For each entry...
     for (int i = 1; i < values.size(); i++)
     {
         std::unordered_set<long long> next;
         long long operand = values[i];
+
+        // Calculate all possible ways to combine new entry with latest.
         for (long long prev : dp) 
         {
             next.insert(prev + operand);
@@ -28,13 +32,13 @@ long long evaluate(std::string line) {
             next.insert(concatenate(prev, operand));
         }
 
+        // Store these, and move on to next entry.
         dp = std::move(next);
     }
-
+        
+    // If final set of outcomes contains the target value...
     if (dp.count(target) > 0)
-    {
         return target;
-    }
 
     return 0;
 }
