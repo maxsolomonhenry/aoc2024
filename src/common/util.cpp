@@ -35,4 +35,15 @@ namespace util {
 
         return buffer;
     }
+
+        std::vector<long> parseLongs(const std::string &line, const char delimiter) {
+        std::stringstream ss(line);
+        std::string temp;
+        std::vector<long> buffer;
+
+        while (std::getline(ss, temp, delimiter))
+            buffer.push_back(std::stol(temp));
+
+        return buffer;
+    }
 }

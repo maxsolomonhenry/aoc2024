@@ -132,11 +132,8 @@ bool isLoop(Grid grid, Guard sentry) {
         if (!grid.isInBounds(sentry.getTarget()))
             return false;
 
-        while (grid.read(sentry.getTarget()) == '#') {
+        while (grid.read(sentry.getTarget()) == '#')
             sentry.turn();
-            if (sentry.isDejaVu(sentry.getTarget()))
-                return true;
-        }
 
         if (sentry.isDejaVu(sentry.getTarget()))
             return true;
@@ -185,10 +182,18 @@ int main() {
         for (const auto& direction : directions) {
             Guard sentry = guard;
             sentry.place(position, direction);
+
+            // Skip scenario where it was going to turn anyway.
+            if (!grid.isInBounds(sentry.getTarget()))
+                continue;
+
+            if (grid.read(sentry.getTarget()) == '#')
+                continue;
+
             sentry.turn();
 
             nLoops += isLoop(grid, sentry);
-            std::cout << "Num loops: " << nLoops << '\n';
+            std::cout << "\rNum loops: " << nLoops << std::flush;
         }
     }
 
