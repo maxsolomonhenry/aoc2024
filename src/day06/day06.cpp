@@ -70,7 +70,7 @@ private:
         {Direction::Right, Point{1, 0}},
     };
 
-    std::map<Direction, Direction> turn {
+    std::map<Direction, Direction> turnLookup {
         {Direction::Up, Direction::Right},
         {Direction::Down, Direction::Left},
         {Direction::Left, Direction::Up},
@@ -78,7 +78,7 @@ private:
     };
 
 public:
-    Guard (Grid* grid_, Point position_, Direction direction_) : grid(grid_), position(position_), direction(direction_) {
+    Guard (Point position_, Direction direction_) : position(position_), direction(direction_) {
         log();
     }
 
@@ -90,20 +90,17 @@ public:
         path[position].push_back(direction);
     }
 
-    bool step() {
-        Point target = position + dxdy[direction];
+    void turn() {
+        direction = turnLookup[direction];
+    }
 
-        if (!grid->isInBounds(target))
-            return false;
-
-        if (grid->read(target) == '#')
-            direction = turn[direction];
-
+    void step() {
         position += dxdy[direction];
-
         log();
+    }
 
-        return true;
+    Point getTarget() {
+        return position + dxdy[direction];
     }
 
     int getNumVisitedTiles() {
@@ -129,9 +126,18 @@ int main() {
                 start = Point(x, y);
         }
     
-    Guard guard(&grid, start, Direction::Up);
+    Guard guard(start, Direction::Up);
 
-    while (guard.step()) {};
+    while (true) {
+
+        if (!grid.isInBounds(guard.getTarget()))
+            break;
+
+        while (grid.read(guard.getTarget()) == '#')
+            guard.turn();
+
+        guard.step();
+    }
 
     std::cout << "Num visited squares: " << guard.getNumVisitedTiles() << '\n';
 
