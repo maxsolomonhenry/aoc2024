@@ -5,6 +5,13 @@
 #include <sstream>
 
 namespace util {
+
+    int ctoi(const char c) {
+        if (std::isdigit(c))
+            return c - '0';
+        return -1;
+    }
+
     std::vector<std::string> read(const std::string &fpath) {
         
         std::ifstream file(fpath);

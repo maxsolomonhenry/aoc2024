@@ -43,7 +43,6 @@ int main() {
             }
     }
 
-
     std::cout << "Total antinodes: " << antinodes.size() << "\n";
     return 0;
 }
