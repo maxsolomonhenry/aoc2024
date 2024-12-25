@@ -1,29 +1,8 @@
 #include "../common/util.h"
+#include "../common/point.h"
 
 #include <iostream>
 #include <map>
-
-struct Point {
-    int x, y;
-
-    Point(int x_ = 0, int y_ = 0) : x(x_), y(y_) {}
-
-    Point operator+(const Point &addend) const {
-        return Point(x + addend.x, y + addend.y);
-    }
-
-    Point& operator+=(const Point &addend) {
-        x += addend.x;
-        y += addend.y;
-        return *this;
-    }
-
-    bool operator<(const Point &comparand) const {
-        if (x != comparand.x) return x < comparand.x;
-        return y < comparand.y;
-    }
-    
-};
 
 enum class Direction {
     Up,
