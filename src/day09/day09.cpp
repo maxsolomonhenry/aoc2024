@@ -62,12 +62,22 @@ int main() {
         }
     }
 
-    int i = 0;
-    for (auto item : memory) {
-        std::cout << "File no: " << item.first << ", " << item.second << '\n';
-        if (i++ >= 10)
+    long long checksum = 0;
+    int blockNo = 0;
+    for (int i = 0; i < memory.size(); i++) {
+
+        const int& fileNo = memory[i].first;
+        const int& nBlocks = memory[i].second;
+
+        if (fileNo == -1)
             break;
+
+        for (int j = 0; j < nBlocks; j++)
+            checksum += (blockNo++) * fileNo;
+        
     }
+
+    std::cout << "checksum: " << checksum << "\n";
 
     return 0;
 }
